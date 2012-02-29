@@ -41,7 +41,7 @@
                 </a><a class="brand" href="#">College Accreditation</a>
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="./index.php"><i class="icon-list-alt icon-white"></i> Reports</a></li>
+                        <li><a href="./index.php"><i class="icon-list-alt icon-white"></i> Reports</a></li>
                         <li><a href="./SearchStudent.php"><i class="icon-user icon-white"></i> Student</a></li>
                         <li><a href="./SearchCourse.php"><i class="icon-book icon-white"></i> Course</a></li>
                         <li class="active"><a href="./SearchTrack.php"><i class="icon-bookmark icon-white"></i> Academic Track</a></li>

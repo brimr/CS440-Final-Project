@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php
+    //require "db_connect.php";
+?>
+
 <head>
     <meta charset="utf-8">
     <title>College Accreditation</title>
@@ -62,169 +66,24 @@
                 <div class="tab-content">
                     <div class="tab-pane active" id="lA">
                         <h3>Completed percentage</h3>
-                        <table class="table table-striped table-bordered table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>0-25%</th>
-                                    <th>25-50%</th>
-                                    <th>50-75%</th>
-                                    <th>75-100%</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>CSS</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td>Javascript</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Stu</td>
-                                    <td>Dent</td>
-                                    <td>HTML</td>
-                                </tr>
-                            </tbody>
-                        </table>
+			<?php include "percent_completion_student_track_report.php"; ?>
                     </div>
                     <div class="tab-pane" id="lB">
                         <h3>Average Time</h3>
-                        <table class="table table-striped table-bordered table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>2009</th>
-                                    <th>2010</th>
-                                    <th>2011</th>
-                                    <th>2012</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>CSS</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td>Javascript</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Stu</td>
-                                    <td>Dent</td>
-                                    <td>HTML</td>
-                                </tr>
-                            </tbody>
-                        </table>
+			<?php include "average_completion_student_track_report.php"; ?>
                     </div>
                     <div class="tab-pane" id="lC">
                         <h3>Ethnicity</h3>
-                        <table class="table table-striped table-bordered table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>2009</th>
-                                    <th>2010</th>
-                                    <th>2011</th>
-                                    <th>2012</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>CSS</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td>Javascript</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Stu</td>
-                                    <td>Dent</td>
-                                    <td>HTML</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    	<?php include "ethnicity_student_report.php"; ?>
+		    </div>
                     <div class="tab-pane" id="lD">
                         <h3>Completed courses</h3>
-                        <table class="table table-striped table-bordered table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>2009</th>
-                                    <th>2010</th>
-                                    <th>2011</th>
-                                    <th>2012</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>CSS</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td>Javascript</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Stu</td>
-                                    <td>Dent</td>
-                                    <td>HTML</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    	<php include "completion_course_report.php"; ?>
+		    </div>
                     <div class="tab-pane" id="lE">
-                        <h3>Required courses</h3>
-                        <table class="table table-striped table-bordered table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>2009</th>
-                                    <th>2010</th>
-                                    <th>2011</th>
-                                    <th>2012</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>CSS</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td>Javascript</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Stu</td>
-                                    <td>Dent</td>
-                                    <td>HTML</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        <h3>Required courses for Computer Systems Option Track</h3>
+			<?php include 'required_courses_for_track_report.php'; ?> 
+		    </div>
                 </div>
             </div>
         </div>
