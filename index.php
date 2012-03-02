@@ -57,14 +57,30 @@
         <div class="row-fluid">
             <div class="tabbable tabs-left">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#lA" data-toggle="tab">Completed percentage</a></li>
+		    <li class="active"><a href="#1W" data-toggle="tab">
+		        <h4><i class="icon-list-alt"></i> College Accreditation Reports</h4>
+		    </a></li>
+                    <li class=""><a href="#lA" data-toggle="tab">Completed percentage</a></li>
                     <li class=""><a href="#lB" data-toggle="tab">Average Time</a></li>
                     <li class=""><a href="#lC" data-toggle="tab">Ethnicity</a></li>
                     <li class=""><a href="#lD" data-toggle="tab">Completed courses</a></li>
                     <li class=""><a href="#lE" data-toggle="tab">Required courses</a></li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="lA">
+		    <div class="tab-pane active" id="1W">
+			<div class="hero-unit">
+ 			     	<h2>Welcome to the College Accreditation Reports Web Application</h2>
+  				<p>	This Web Application is used by Colleges seeking accreditation from an official accreditation bodies.
+				   	Colleges have the ability to generate reports regarding academic tracks, courses, and students during 
+					specific time periods.</p>
+				<p>	Obtaining accreditation is very important because it demonstrates a College 
+					meets a high standard in teaching and research. Being accredited will also draw prestigious faculty 
+					and promising students to the College. </p>
+  			        <p>If you are a College Administrators please use this Application.</p>
+				<h3>Get Accredited. Win!</h3>
+			</div>
+		    </div>
+                    <div class="tab-pane" id="lA">
                         <h3>Completed percentage</h3>
 			<?php include "percent_completion_student_track_report.php"; ?>
                     </div>
@@ -81,8 +97,8 @@
                     	<php include "completion_course_report.php"; ?>
 		    </div>
                     <div class="tab-pane" id="lE">
-                        <h3>Required courses for Computer Systems Option Track</h3>
-			<?php include 'required_courses_for_track_report.php'; ?> 
+                        <h3 id="requiredCoursesHeader">Required courses for Computer Systems Option Track</h3>
+			<?php include 'required_courses_for_track.php'; ?> 
 		    </div>
                 </div>
             </div>
@@ -110,5 +126,17 @@
     <script src="./assets/js/bootstrap-collapse.js"></script>
     <script src="./assets/js/bootstrap-carousel.js"></script>
     <script src="./assets/js/bootstrap-typeahead.js"></script>
+    <script type="text/javascript">
+        $(document).ready( function() {
+		$("#requiredCoursesHeader").text( "Required Courses for " + $("#requiredCoursesSelect").val() );
+		$("#requiredCourses").load( "required_courses_for_track_report.php", {"track": $("#requiredCoursesSelect").val()} );
+
+                $("#requiredCoursesSelect").change( function() {
+			$("#requiredCoursesHeader").text( "Required Courses for " + $(this).val() );
+			$("#requiredCourses").load( "required_courses_for_track_report.php", {"track": $(this).val()} );
+                });
+        });
+    </script>
+
 </body>
 </html>

@@ -1,7 +1,7 @@
 <?php
 	$hostname = "oniddb.cws.oregonstate.edu";
-        $user = "";
-        $pass = "";
+        $user = "leweyk-db";
+        $pass = "5M4AVkbRNmg4YyLM";
         $database = "leweyk-db";
         
 	if( !mysql_connect( $hostname, $user, $pass ) ) {

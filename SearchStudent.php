@@ -62,7 +62,8 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="1">
-                        <form class="form-vertical">
+                       <div class="row">
+			  <div class="span3 well">
                             <fieldset>
                                 <legend>Student Search</legend>
                                 <label for="OSUid">OSU ID:</label>
@@ -71,19 +72,15 @@
                                 <input type="text" class="input-xlarge" id="firstName">
                                 <label for="lastName">Last Name:</label>
                                 <input type="text" class="input-xlarge" id="lastName">
-                                <label for="major">Major:</label>
-                                <select class="span2">
-                                    <option>CS</option>
-                                    <option>BIO</option>
-                                    <option>HIST</option>
-                                    <option>CHEM</option>
-                                    <option>ENG</option>
-                                </select>
                                 <div class="form-actions">
-                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    <button id="searchStudentBtn" class="btn btn-primary">Search</button>
                                 </div>
                             </fieldset>
-                        </form>
+			</div>
+			<div id="displaySearchStudent" class="span6">
+		
+			</div>
+			</div>
                     </div>
                     <div class="tab-pane" id="2">
                         <form class="form-vertical">
@@ -104,7 +101,7 @@
                                 <option>ENG</option>
                             </select>
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Add</button>
+                                <button id="addStudentBtn" type="submit" class="btn btn-primary">Add</button>
                             </div>
                         </fieldset>
                         </form>
@@ -134,5 +131,37 @@
     <script src="./assets/js/bootstrap-collapse.js"></script>
     <script src="./assets/js/bootstrap-carousel.js"></script>
     <script src="./assets/js/bootstrap-typeahead.js"></script>
+    <script type="text/javascript">
+	$(document).ready( function() {
+
+		$("#OSUid").keydown( function() {
+			OSU_ID = $("#OSUid").val();
+			FirstName = $("#firstName").val();
+			LastName = $("#lastName").val();
+			$("#displaySearchStudent").load("search_student_results.php", {"OSU_ID": OSU_ID, "FirstName": FirstName, "LastName": LastName});	
+		});
+
+		$("#firstName").keydown( function() {
+			OSU_ID = $("#OSUid").val();
+			FirstName = $("#firstName").val();
+			LastName = $("#lastName").val();
+			$("#displaySearchStudent").load("search_student_results.php", {"OSU_ID": OSU_ID, "FirstName": FirstName, "LastName": LastName});	
+		});
+
+		$("#lastName").keydown( function() {
+			OSU_ID = $("#OSUid").val();
+			FirstName = $("#firstName").val();
+			LastName = $("#lastName").val();
+			$("#displaySearchStudent").load("search_student_results.php", {"OSU_ID": OSU_ID, "FirstName": FirstName, "LastName": LastName});	
+		});
+
+		$("#searchStudentBtn").click( function() {
+			OSU_ID = $("#OSUid").val();
+			FirstName = $("#firstName").val();
+			LastName = $("#lastName").val();
+			$("#displaySearchStudent").load("search_student_results.php", {"OSU_ID": OSU_ID, "FirstName": FirstName, "LastName": LastName});
+	});
+	});
+    </script>		
 </body>
 </html>
