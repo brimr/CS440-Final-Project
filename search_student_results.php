@@ -17,7 +17,14 @@
 	if( !$studentResults ) {
 		print "QUERY FAILED: " . $studentResults;
 	}
-
+	
+	$rows = array();
+	while($r = mysql_fetch_assoc($studentResults)) {
+	    $rows[] = $r;
+	}
+	print json_encode($rows);
+	
+	/*
 	print '<table class="table table-striped table-bordered table-condensed">';
 	print '<thead><tr>';
 	print '<th>OSU ID</th>';
@@ -40,4 +47,5 @@
 
 	print '</tbody>';
 	print '</table>';
+	*/
 ?>
