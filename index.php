@@ -87,10 +87,10 @@
                     <div class="tab-pane" id="lB">
                         <h3>Average Time to Complete a Track</h3>
 						<form name = "Dates" class="well form-inline" action = "http://people.oregonstate.edu/~leweyk/">
-							<input type="text" name = "startYear" id = "startYear" class="input-small" placeholder="Start Year">
-							<input type="text" name = "endYear" id = "endYear" class="input-small" placeholder="End Year">
-							<button type="submit" class="btn">Go</button>
-						</form>
+							<input type="text" name = "startDate" class="input-small" placeholder="Start Year">
+							<input type="text" name = "endDate" class="input-small" placeholder="End Year">
+							<button type = "submit" class="btn">Go</button>
+							</form>
 
 			<?php include "average_completion_student_track_report.php"; ?>
                     </div>
@@ -137,10 +137,11 @@
 		$("#requiredCoursesHeader").text( "Required Courses for " + $("#requiredCoursesSelect").val() );
 		$("#requiredCourses").load( "required_courses_for_track_report.php", {"track": $("#requiredCoursesSelect").val()} );
 
-                $("#requiredCoursesSelect").change( function() {
+            $("#requiredCoursesSelect").change( function() {
 			$("#requiredCoursesHeader").text( "Required Courses for " + $(this).val() );
 			$("#requiredCourses").load( "required_courses_for_track_report.php", {"track": $(this).val()} );
                 });
+
         });
     </script>
 </body>

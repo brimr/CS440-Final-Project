@@ -3,8 +3,8 @@
 	
 	//$startYear = 0;
 	//$endYear = 0;
-	$startYear = $_GET['startYear'];
-	$endYear = $_GET['endYear'];
+	$startYear = $_GET['startDate'];
+	$endYear = $_GET['endDate'];
 	
 	if ($startYear == "")
 		$startYear = 2007;
@@ -12,8 +12,8 @@
 	if ($endYear == "")
 		$endYear = 2012;
 		
-	//print "<th> {$startYear} </th>";
-	//print "<th> {$endYear} </th>";
+	//echo $startYear;
+	//echo $endYear;
 	
 	$graduatedTrackQuery = "SELECT g.Track_Name, g.Date AS Grad_date, e.Date AS Enrolled_date
 							FROM EVENT AS g, EVENT AS e
