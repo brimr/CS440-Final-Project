@@ -3,8 +3,8 @@
 	
 	//$startYear = 0;
 	//$endYear = 0;
-	$startYear = $_GET['startDate'];
-	$endYear = $_GET['endDate'];
+	$startYear = $_POST['startDate'];
+	$endYear = $_POST['endDate'];
 	
 	if ($startYear == "")
 		$startYear = 2007;
