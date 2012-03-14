@@ -5,7 +5,9 @@
 	$FirstName = $_POST["FirstName"];
 	$LastName = $_POST["LastName"];
 
-//	print "HERE: {$OSU_ID}";
+	//print "HERE: {$OSU_ID}";
+	//print "HERE: {$FirstName}";
+	//print "HERE: {$LastName}";
 
 	$searchStudentQuery = 	"SELECT * FROM STUDENT
 				WHERE OSU_ID LIKE '%{$OSU_ID}%' 

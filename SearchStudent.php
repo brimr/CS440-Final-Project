@@ -20,6 +20,8 @@
         }
     </style>
     <link href="./assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="./assets/css/jquery.validity.css" rel="stylesheet">
+    <link href="./assets/css/cupertino/jquery-ui-1.8.18.custom.css" rel="stylesheet">
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -70,19 +72,21 @@
 							<div class="span3 well">
 								<fieldset>
 									<legend>Student Search</legend>
-									<label for="OSUid">OSU ID:</label>
-									<input type="text" class="input-xlarge" id="OSUid">
-									<label for="firstName">First Name:</label>
-									<input type="text" class="input-xlarge" id="firstName">
-									<label for="lastName">Last Name:</label>
-									<input type="text" class="input-xlarge" id="lastName">
+									<label for="SearchOSUid">OSU ID:</label>
+									<input type="text" class="input-xlarge" id="SearchOSUid">
+									<label for="SearchFirstName">First Name:</label>
+									<input type="text" class="input-xlarge" id="SearchFirstName">
+									<label for="SearchLastName">Last Name:</label>
+									<input type="text" class="input-xlarge" id="SearchLastName">
 									<div class="form-actions">
 										<button id="searchStudentBtn" class="btn btn-primary">Search</button>
 									</div>
 								</fieldset>
 							</div> 
 							<div id="displaySearchStudent" class="span8">
+								<h3>Search Results</h3>
 								<table class="table table-striped table-bordered table-condensed" >
+								 <caption><h4>Click on students to view details...</h4></caption>
 								<thead>
 									<tr>
 										<th>OSU ID</th>
@@ -115,52 +119,51 @@
 						<fieldset>
                             <legend>Add Student</legend>
 							<div class="control-group">
-								<label class="control-label" for="OSUid">OSU ID:</label>
+								<label class="control-label" for="AddOSUid">OSU ID:</label>
 								<div class="controls">
-									<input data-bind="value: OSU_ID" id="OSUid"/>
+									<input data-bind="value: OSU_ID" id="AddOSUid"/>
 								</div>
 							</div>
 							
 							<div class="control-group">
 								<label class="control-label" for="firstName">First Name:</label>
 								<div class="controls">
-									<input data-bind="value: First_Name" id="firstName"/>
+									<input data-bind="value: First_Name" id="AddFirstName"/>
 								</div>
 							</div>
 							
 							<div class="control-group">
 							<label class="control-label" for="middleInitial">Middle Initial:</label>
 								<div class="controls">
-									<input class="span1" data-bind="value: Middle_Initial" id="middleInitial"/>
+									<input class="span1" data-bind="value: Middle_Initial" id="AddMiddleInitial"/>
 								</div>
 							</div>
 							
 							<div class="control-group">
                             <label class="control-label" for="lastName">Last Name:</label>
 								<div class="controls">
-									<input data-bind="value: Last_Name" id="lastName"/>
+									<input data-bind="value: Last_Name" id="AddLastName"/>
 								</div>
 							</div>
-							
+
 							<div class="control-group">
 							<label class="control-label" for="birthDate">Birth Date:</label>
 								<div class="controls">
-									<input data-bind="value: BirthDate" id="birthDate"/>
+									<input data-bind="value: BirthDate" id="AddBirthDate" />
 								</div>
 							</div>
 							
 							<div class="control-group">
-							<label class="control-label" for="genderRadio">Gender:</label>
+							<label class="control-label" for="AddGenderSelect">Gender:</label>
 								<div class="controls">
-									<input type="radio" name="sex" value="M" data-bind="checked: Gender"/> Male
-									<input type="radio" name="sex" value="F" data-bind="checked: Gender"/> Female
+									<select id="AddGenderSelect" data-bind="options: $root.genderValues, optionsText: 'label', optionsValue: 'symbol', value: Gender"></select>
 								</div>
 							</div>
 							
 							<div class="control-group">
-							<label class="control-label" for="ethnicitySelect">Ethnicity:</label>
+							<label class="control-label" for="AddEthnicitySelect">Ethnicity:</label>
 								<div class="controls">
-									<select id="ethnicitySelect" data-bind="options: $root.ethnicityValues, value: Ethnicity"></select>
+									<select id="AddEthnicitySelect" data-bind="options: $root.ethnicityValues, value: Ethnicity"></select>
 								</div>
 							</div>
 							<div class="form-actions">
@@ -173,7 +176,7 @@
 						<div class="row">
 							<div class="span3">
 								<label>OSU ID</label> 
-								<input readonly="readonly" data-bind="value: OSU_ID" id="OSUid"/>
+								<input readonly="readonly" data-bind="value: OSU_ID" id="StudentOSUid"/>
 								<label>Birth Date</label> 
 								<input readonly="readonly" data-bind="value: BirthDate" id="BirthDate"/>
 							</div>
@@ -192,6 +195,9 @@
 							<div class="span3">
 								<label>Last Name</label> 
 								<input readonly="readonly" data-bind="value: Last_Name" id="lastName"/>
+								<br /><br />
+								<button id="editStudentBtn" class="btn btn-warning" data-bind="click: $root.editStudent">Edit</button>
+								<button id="deleteStudentBtn" class="btn btn-danger" data-bind="click: $root.deleteStudent">Delete</button>
 							</div>
 						</div>
 						<br />
@@ -254,11 +260,78 @@
                 </div>
             </div> 
         </div>
+		<div id="TEST"></div>
         <hr>
         <footer>
             <p>&copy; Dwight Trahin, Ryan Brim and Karen Lewey 2012</p>
         </footer>
     </div>
+	
+	<div id="editStudent" class="modal hide fade in" data-bind="with: chosenStudent" >
+		<div class="modal-header">
+			<a class="close" data-dismiss="modal">×</a>
+			<h3>Edit Student</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label" for="editOSUid">OSU ID:</label>
+				<div class="controls">
+					<input readonly="readonly" data-bind="value: OSU_ID" id="editOSUid"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="firstName">First Name:</label>
+				<div class="controls">
+					<input data-bind="value: First_Name" id="editFirstName"/>
+				</div>
+			</div>
+			
+			<div class="control-group">
+			<label class="control-label" for="middleInitial">Middle Initial:</label>
+				<div class="controls">
+					<input class="span1" data-bind="value: Middle_Initial" id="editMiddleInitial"/>
+				</div>
+			</div>
+			
+			<div class="control-group">
+			<label class="control-label" for="lastName">Last Name:</label>
+				<div class="controls">
+					<input data-bind="value: Last_Name" id="editLastName"/>
+				</div>
+			</div>
+
+			<div class="control-group">
+			<label class="control-label" for="birthDate">Birth Date:</label>
+				<div class="controls">
+					<div class="input-append">
+					<input readonly="readonly" data-bind="value: BirthDate" id="editedBirthdate"/>
+					<span class="add-on" id="EditBirthDate"><i class="icon-edit"></i></span>
+					</div>
+				</div>
+			</div>
+			
+			<div class="control-group">
+			<label class="control-label" for="AddGenderSelect">Gender:</label>
+				<div class="controls">
+					<select id="editGenderSelect" data-bind="options: $root.genderValues, optionsText: 'label', optionsValue: 'symbol', value: Gender"></select>
+				</div>
+			</div>
+			
+			<div class="control-group">
+			<label class="control-label" for="AddEthnicitySelect">Ethnicity:</label>
+				<div class="controls">
+					<select id="editEthnicitySelect" data-bind="options: $root.ethnicityValues, value: Ethnicity"></select>
+				</div>
+			</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+		  <a href="#" class="btn" data-dismiss="modal">Close</a>
+		  <a href="#" class="btn btn-primary">Save changes</a>
+		</div>
+	</div>	
+
     <!--/.fluid-container-->
     <!-- Le javascript
         ================================================== -->
@@ -278,8 +351,88 @@
     <script src="./assets/js/bootstrap-typeahead.js"></script>
 	<script src='./assets/js/knockout-2.0.0.js'></script>
 	<script src='./assets/js/knockout.mapping.js'></script>
+	<script src='./assets/js/jQuery.validity.min.js'></script>
+	<script src='./assets/js/jquery-ui-1.8.18.custom.min.js'></script>
     <script type="text/javascript">
 	$(document).ready( function() {
+		(function(){
+			// We'll decide to install our custom output mode under the name 'custom':
+			$.validity.outputs.custom = {
+				// In this case, the start function will just reset the inputs:
+				start:function(){ 
+					$('.control-group')
+						.removeClass('error');
+					$('.errorMsg')
+						.remove();
+				},
+				
+				end:function(results) { 
+					// If not valid and scrollTo is enabled, scroll the page to the first error.
+					if (!results.valid && $.validity.settings.scrollTo) {
+						location.hash = $(".fail:eq(0)").attr('id')
+					}
+				},
+				
+				// Our raise function will display the error and animate the text-box:
+				raise:function($obj, msg){
+					// Animate the border of the text box:
+					//alert( msg );
+					
+					$obj
+						.parent().parent()
+						.addClass('error');
+						
+					$obj
+						.parent()
+						.append('<span class="help-inline errorMsg">'+msg+'</span>');
+				},
+				
+				// Our aggregate raise will just raise the error on the last input:
+				raiseAggregate:function($obj, msg){ 
+					this.raise($($obj.get($obj.length - 1)), msg); 
+				}
+			}
+		})();
+	
+		$.validity.setup({ outputMode:"custom" });
+	
+		// This is the validation function:
+		function validateMyAjaxInputs() {
+			
+			// Start validation:
+			$.validity.start();
+			
+			$("#AddOSUid").require("OSU ID Required.").match(/^931\d{6}$/, "Must be a valid 9-digit OSU ID number. ex.931000000");
+			$("#AddFirstName").require("First Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "First Name must be less than 40 characters" );
+			$("#AddLastName").require("Last Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "Last Name must be less than 40 characters" );
+			$("#AddBirthDate").require("Birth Date Required");
+			
+			$("#editFirstName").require("First Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "First Name must be less than 40 characters" );
+			$("#editLastName").require("Last Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "Last Name must be less than 40 characters" );
+			$("#editBirthDate").require("Birth Date Required");
+			
+			$("form").validity(function() {
+				$("adio").assert(
+					$(".form-radio:checked").length != 0, 
+					"You must select yes or no to proceed."
+				);
+			});
+			
+			var result = $.validity.end();
+			//alert(result.valid);
+			return result.valid;
+		}
+
+
+		// This is the function wired into the click event of some link or button:
+		function addStudentClicked() {
+			// First check whether the inputs are valid:
+			if (validateMyAjaxInputs()) {
+				return true;
+			}
+			return false;
+		}
+	
 	
 		function Student(OSU_ID, First_Name, Last_Name, Middle_Initial, BirthDate, Gender, Ethnicity) {
 			var self = this;
@@ -375,6 +528,13 @@
 			self.icon = ko.observable(icon);
 		}
 		
+		function Gender( label, symbol )
+		{
+			var self = this;
+			self.label = label;
+			self.symbol = symbol;
+		}
+		
 		function StudentSearchViewModel() {
 		    // Data
 			var self = this;
@@ -386,6 +546,10 @@
 			
 			self.eventValues = ko.observableArray(["Enrolled", "Graduated"]);
 			self.ethnicityValues = ko.observableArray(["Hispanic", "Caucasian", "Asian", "Native American"]);
+			self.genderValues = ko.observableArray([
+				new Gender("Male","M"),
+				new Gender("Female", "F"),
+				new Gender("Other", "O") ]);
 			
 			self.trackValues = ko.observableArray();
 			$.getJSON("ajax_get_track_list.php", function(data) { 
@@ -438,18 +602,19 @@
 			self.students = ko.observableArray([
 				student1, student2
 			]);	
-			$.getJSON("search_student_results.php", function(data) { 
-				$.each(data, function(i, item) {
-					var student = new Student( 	data[i].OSU_ID, 
-												data[i].First_Name,
-												data[i].Last_Name,
-												data[i].Middle_Initial,
-												data[i].Birthdate,
-												data[i].Gender,
-												data[i].Ethnicity);		
-					viewModel.students.push( student );
-				});
-			})
+			
+			// $.getJSON("search_student_results.php", function(data) { 
+				// $.each(data, function(i, item) {
+					// var student = new Student( 	data[i].OSU_ID, 
+												// data[i].First_Name,
+												// data[i].Last_Name,
+												// data[i].Middle_Initial,
+												// data[i].Birthdate,
+												// data[i].Gender,
+												// data[i].Ethnicity);		
+					// viewModel.students.push( student );
+				// });
+			// })
 			
 			self.searchStudentsResults = ko.observableArray();
 			self.searchStudentsResults = self.students;
@@ -473,15 +638,93 @@
 			};
 						
 			self.addStudent = function(student) { 
-				self.students.push( student );
-				self.goToStudent(student); 
-				self.studentToAdd( new Student() );
+				var jsonStudent = ko.toJS(student);
+				var jsonStudentData = {	"OSU_ID": jsonStudent.OSU_ID,
+										"First_Name": jsonStudent.First_Name,
+										"Last_Name": jsonStudent.Last_Name,
+										"Middle_Initial": jsonStudent.Middle_Initial,
+										"BirthDate": jsonStudent.BirthDate,
+										"Gender": jsonStudent.Gender,
+										"Ethnicity": jsonStudent.Ethnicity};
+				if( addStudentClicked() )
+				{
+					var request = $.ajax({
+						type: 'POST',
+						url: "ajax_insert_student.php",
+						data: jsonStudentData,
+						success: function(returnedData) {
+							self.students.push( student );
+							self.goToStudent(student); 
+							self.studentToAdd( new Student() );
+							$('#AddBirthDate').datepicker();
+							$('#AddBirthDate').datepicker("option", "dateFormat", "yy-mm-dd");
+						}
+					});
+					
+					request.fail(function(jqXHR, textStatus) {
+						alert( "Request failed: " + textStatus );
+					});
+				}
 			};		
+			
+			self.editStudent = function(student) {
+				$('#editStudent').modal();
+				$('#EditBirthDate').click( function() {
+					$('#editedBirthdate').datepicker();
+					$('#editedBirthdate').datepicker("option", "dateFormat", "yy-mm-dd");
+					$( "#editedBirthdate" ).datepicker( "option", "defaultDate", ko.toJS(student.BirthDate) );
+					$( "#editedBirthdate" ).datepicker("show");
+				});
+			};
 			
 		}
 		
 		var viewModel = new StudentSearchViewModel();
 		ko.applyBindings( viewModel );
+		
+		function searchStudent() {
+			OSU_ID = $("#SearchOSUid").val();
+			FirstName = $("#SearchFirstName").val();
+			LastName = $("#SearchLastName").val();
+			$.ajax({
+				type: "POST",
+				url: "search_student_results.php",
+				dataType: 'json',
+				data: {"OSU_ID": OSU_ID, "FirstName": FirstName, "LastName": LastName},
+				success: function(data) {
+					viewModel.students([]); 
+					$.each(data, function(i, item) {
+						var student = new Student( 	data[i].OSU_ID, 
+													data[i].First_Name,
+													data[i].Last_Name,
+													data[i].Middle_Initial,
+													data[i].Birthdate,
+													data[i].Gender,
+													data[i].Ethnicity);		
+						viewModel.students.push( student );
+					});
+				}
+			});
+		}
+		
+		$("#searchStudentBtn").click( function() {
+			searchStudent();
+		});
+		
+		$("#SearchOSUid").keydown( function() {
+			searchStudent();
+		});
+
+		$("#SearchFirstName").keydown( function() {
+			searchStudent();
+		});
+
+		$("#SearchLastName").keydown( function() {
+			searchStudent();
+		});
+		
+		$('#AddBirthDate').datepicker();
+		$('#AddBirthDate').datepicker("option", "dateFormat", "yy-mm-dd");
 		
 		//HACK
 		$("#Search").prop( "class", "active" );
