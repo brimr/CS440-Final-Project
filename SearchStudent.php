@@ -260,13 +260,24 @@
                 </div>
             </div> 
         </div>
-		<div id="TEST"></div>
         <hr>
         <footer>
             <p>&copy; Dwight Trahin, Ryan Brim and Karen Lewey 2012</p>
         </footer>
     </div>
 	
+	<div id="deleteStudent" class="modal hide fade in" data-bind="with: chosenStudent" >
+		<div class="modal-body"> 
+			<div class="alert alert-block alert-error">
+				<h4 class="alert-heading">Delete Student</h4>
+				<p>Are you sure you want to delete this Student?</p>
+				<br />
+				<button id="confirmedDeleteStudentBtn" class="btn btn-danger" data-bind="click: $root.confirmedDeleteStudent">YES</button>
+				<button class="btn" data-dismiss="modal">NO</button>
+			</div>		
+		</div>
+	</div>
+		
 	<div id="editStudent" class="modal hide fade in" data-bind="with: chosenStudent" >
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">×</a>
@@ -328,7 +339,7 @@
 		</div>
 		<div class="modal-footer">
 		  <a href="#" class="btn" data-dismiss="modal">Close</a>
-		  <a href="#" class="btn btn-primary">Save changes</a>
+		  <a href="#" class="btn btn-primary" data-dismiss="modal">Save changes</a>
 		</div>
 	</div>	
 
@@ -350,7 +361,7 @@
     <script src="./assets/js/bootstrap-carousel.js"></script>
     <script src="./assets/js/bootstrap-typeahead.js"></script>
 	<script src='./assets/js/knockout-2.0.0.js'></script>
-	<script src='./assets/js/knockout.mapping.js'></script>
+	<!--<script src='./assets/js/knockout.mapping.js'></script>-->
 	<script src='./assets/js/jQuery.validity.min.js'></script>
 	<script src='./assets/js/jquery-ui-1.8.18.custom.min.js'></script>
     <script type="text/javascript">
@@ -410,13 +421,6 @@
 			$("#editFirstName").require("First Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "First Name must be less than 40 characters" );
 			$("#editLastName").require("Last Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "Last Name must be less than 40 characters" );
 			$("#editBirthDate").require("Birth Date Required");
-			
-			$("form").validity(function() {
-				$("adio").assert(
-					$(".form-radio:checked").length != 0, 
-					"You must select yes or no to proceed."
-				);
-			});
 			
 			var result = $.validity.end();
 			//alert(result.valid);
@@ -679,6 +683,18 @@
 					$( "#editedBirthdate" ).datepicker( "option", "defaultDate", ko.toJS(student.BirthDate) );
 					$( "#editedBirthdate" ).datepicker("show");
 				});
+			};
+			
+			self.deleteStudent = function(student) {
+				$('#deleteStudent').modal();
+			};
+			
+			self.confirmedDeleteStudent = function(student) {
+				$('#deleteStudent').modal('toggle');
+				self.students.destroy( student );
+				self.students.remove( student );
+				self.studentTabs.pop();
+				$('#Search a').tab('show');
 			};
 			
 		}
