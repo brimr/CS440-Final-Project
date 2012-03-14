@@ -658,6 +658,8 @@
 							self.studentToAdd( new Student() );
 							$('#AddBirthDate').datepicker();
 							$('#AddBirthDate').datepicker("option", "dateFormat", "yy-mm-dd");
+							$('#AddBirthDate').datepicker( "option", "changeYear", true );
+							$('#AddBirthDate').datepicker("option", "yearRange", "1940:2012");
 						}
 					});
 					
@@ -672,6 +674,8 @@
 				$('#EditBirthDate').click( function() {
 					$('#editedBirthdate').datepicker();
 					$('#editedBirthdate').datepicker("option", "dateFormat", "yy-mm-dd");
+					$('#editedBirthdate').datepicker( "option", "changeYear", true );
+					$('#editedBirthdate').datepicker("option", "yearRange", "1940:2012");
 					$( "#editedBirthdate" ).datepicker( "option", "defaultDate", ko.toJS(student.BirthDate) );
 					$( "#editedBirthdate" ).datepicker("show");
 				});
@@ -725,6 +729,8 @@
 		
 		$('#AddBirthDate').datepicker();
 		$('#AddBirthDate').datepicker("option", "dateFormat", "yy-mm-dd");
+		$('#AddBirthDate').datepicker("option", "changeYear", true);
+		$('#AddBirthDate').datepicker("option", "yearRange", "1940:2012");
 		
 		//HACK
 		$("#Search").prop( "class", "active" );
