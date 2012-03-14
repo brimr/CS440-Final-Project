@@ -1,12 +1,25 @@
 <?php
 	require "db_connect.php";
 	
+	$startYear = $_POST['firstDate'];
+	$endYear = $_POST['lastDate'];
+	
+	if ($startYear == "")
+		$startYear = 1994;
+		
+	if ($endYear == "")
+		$endYear = 2012;
+		
+	//echo $startYear;
+	//echo $endYear;
+	
 	$studentCoursesPerTrackQuery = "SELECT e.Student_ID, e.Track_Name, COUNT(term.Course_Num) AS Num_Courses
 									FROM EVENT AS e
 										JOIN TERM_COURSE AS term ON e.Student_ID = term.Student_ID
 										JOIN TRACK_COURSE AS track ON e.Track_Name = track.Track_Name 
 										AND	term.Course_Num = track.Course_Num
 									WHERE term.Completed = 'Y' AND e.Description = 'Enrolled'
+									AND Date >= '{$startYear}-01-01' AND Date <= '{$endYear}-12-31'
 									GROUP BY e.Student_ID
 									ORDER BY Track_Name;";
 									

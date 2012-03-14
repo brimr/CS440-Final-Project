@@ -82,7 +82,13 @@
 		    </div>
                     <div class="tab-pane" id="lA">
                         <h3>Number of Students Completing Percentage of Courses by Track</h3>
-			<?php include "percent_completion_student_track_report.php"; ?>
+						<!--form name = "Dates" class="well form-inline" action = "http://people.oregonstate.edu/~leweyk/">-->
+							<input type="text" name = "firstDate" id = "firstDate" class="input-small" placeholder="Start Year">
+							<input type="text" name = "lastDate" id = "lastDate" class="input-small" placeholder="End Year">
+							<button id = "NewDate" type = "submit" class="btn">Go</button>
+							<div id = "percentByTrack"></div>
+						<!--</form>-->
+			<!--<?php include "percent_completion_student_track_report.php"; ?>-->
                     </div>
                     <div class="tab-pane" id="lB">
                         <h3>Average Time to Complete a Track</h3>
@@ -152,6 +158,14 @@
 				endDate = $("#endDate").val();
 				$("#percentCompleteContent").load( "average_completion_student_track_report.php", {"startDate": startDate, "endDate": endDate});
                 });
+			firstDate = $("#firstDate").val();
+			lastDate = $("#lastDate").val();
+			$("#percentByTrack").load( "percent_completion_student_track_report.php", {"firstDate": firstDate, "lastDate": lastDate});
+			$("#NewDate").click( function() {
+				firstDate = $("#firstDate").val();
+				lastDate = $("#lastDate").val();
+				$("#percentByTrack").load( "percent_completion_student_track_report.php", {"firstDate": firstDate, "lastDate": lastDate});
+                });	
         });
     </script>
 </body>
