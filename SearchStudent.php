@@ -501,7 +501,7 @@
 			self.addEvent = function() { 
 				jsEventTrack = ko.toJS( self.eventTrackToAdd );
 				jsEventDesc = ko.toJS( self.eventDescToAdd );
-				newEvent = new Event( jsEventDesc, "1/2/1929", jsEventTrack );
+				newEvent = new Event( jsEventDesc, "3/15/2012", jsEventTrack );
 				self.events.push( newEvent );
 			}
 		}
