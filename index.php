@@ -62,7 +62,7 @@
 		    </a></li>
                     <li class=""><a href="#lA" data-toggle="tab">Completed percentage</a></li>
                     <li class=""><a href="#lB" data-toggle="tab">Average Time</a></li>
-                    <li class=""><a href="#lC" data-toggle="tab">Ethnicity</a></li>
+                    <li class=""><a href="#lC" data-toggle="tab">Age, Gender, Ethnicity Statistics</a></li>
                     <li class=""><a href="#lD" data-toggle="tab">Completed courses</a></li>
                     <li class=""><a href="#lE" data-toggle="tab">Required courses</a></li>
                 </ul>
