@@ -2,8 +2,13 @@
 	require "db_connect.php";
 
 	$OSU_ID = $_POST["OSU_ID"];
+	$OSU_ID = mysql_real_escape_string( $OSU_ID );
+	
 	$FirstName = $_POST["FirstName"];
+	$FirstName = mysql_real_escape_string( $FirstName );
+	
 	$LastName = $_POST["LastName"];
+	$LastName = mysql_real_escape_string( $LastName );
 
 	//print "HERE: {$OSU_ID}";
 	//print "HERE: {$FirstName}";
@@ -25,29 +30,4 @@
 	    $rows[] = $r;
 	}
 	print json_encode($rows);
-	
-	/*
-	print '<table class="table table-striped table-bordered table-condensed">';
-	print '<thead><tr>';
-	print '<th>OSU ID</th>';
-	print '<th>First Name</th>';
-	print '<th>Last Name</th>';
-	print '<th>Middle Intial</th>';
-	print '<th>BirthDate</th>';
-	print '<th>Gender</th>';
-	print '<th>Enicity</th>';
-	print '</tr></thead>';
-	print '<tbody>';
-
-	while( $row = mysql_fetch_row( $studentResults ) ) 
-	{
-		print '<tr>';
-		foreach($row as $data)
-			print "<td> {$data} </td>";
-		print '</tr>';
-	}
-
-	print '</tbody>';
-	print '</table>';
-	*/
 ?>

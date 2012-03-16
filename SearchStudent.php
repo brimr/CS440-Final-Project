@@ -166,6 +166,10 @@
 									<select id="AddEthnicitySelect" data-bind="options: $root.ethnicityValues, value: Ethnicity"></select>
 								</div>
 							</div>
+							<div id="AddStudentAlert" class="alert alert-block alert-error fade in hide">
+								<h4 class="alert-heading">Error!</h4>
+								<p id="AddStudentError"></p>
+							</div>
 							<div class="form-actions">
                                 <button id="addStudentBtn" class="btn btn-primary" data-bind="click: $root.addStudent">Add Student</button>
                             </div>
@@ -268,22 +272,24 @@
 	
 	<div id="deleteStudent" class="modal hide fade in" data-bind="with: chosenStudent" >
 		<div class="modal-body"> 
-			<div class="alert alert-block alert-error">
-				<h4 class="alert-heading">Delete Student</h4>
-				<p>Are you sure you want to delete this Student?</p>
-				<br />
-				<button id="confirmedDeleteStudentBtn" class="btn btn-danger" data-bind="click: $root.confirmedDeleteStudent">YES</button>
-				<button class="btn" data-dismiss="modal">NO</button>
-			</div>		
+			<div id="DeleteStudentAlert" class="alert alert-block alert-error fade in hide">
+				<h4 class="alert-heading">Error!</h4>
+				<p id="DeleteStudentError"></p>
+			</div>	
+			<p>Are you sure you want to delete this Student?</p>
+			<br />
+			<button id="confirmedDeleteStudentBtn" class="btn btn-danger" data-bind="click: $root.confirmedDeleteStudent">DELETE</button>
+			<button class="btn" data-dismiss="modal">Cancel</button>
+
 		</div>
 	</div>
 		
-	<div id="editStudent" class="modal hide fade in" data-bind="with: chosenStudent" >
+	<div id="editStudent" class="modal hide fade in" data-bind="with: $root.editedStudentModel">
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">×</a>
 			<h3>Edit Student</h3>
 		</div>
-		<div class="modal-body">
+		<div class="modal-body" >
 			<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label" for="editOSUid">OSU ID:</label>
@@ -315,10 +321,7 @@
 			<div class="control-group">
 			<label class="control-label" for="birthDate">Birth Date:</label>
 				<div class="controls">
-					<div class="input-append">
-					<input readonly="readonly" data-bind="value: BirthDate" id="editedBirthdate"/>
-					<span class="add-on" id="EditBirthDate"><i class="icon-edit"></i></span>
-					</div>
+					<input data-bind="value: BirthDate" id="editedBirthdate"/>
 				</div>
 			</div>
 			
@@ -337,9 +340,13 @@
 			</div>
 			</form>
 		</div>
+		<div id="EditStudentAlert" class="alert alert-block alert-error fade in hide">
+			<h4 class="alert-heading">Error!</h4>
+			<p id="EditStudentError"></p>
+		</div>
 		<div class="modal-footer">
-		  <a href="#" class="btn" data-dismiss="modal">Close</a>
-		  <a href="#" class="btn btn-primary" data-dismiss="modal">Save changes</a>
+		  <button class="btn" data-dismiss="modal">Close</button>
+		  <button class="btn btn-primary" data-bind="click: $root.saveEditedStudent">Save changes</button>
 		</div>
 	</div>	
 
@@ -408,7 +415,7 @@
 		$.validity.setup({ outputMode:"custom" });
 	
 		// This is the validation function:
-		function validateMyAjaxInputs() {
+		function validateAddStudentInputs() {
 			
 			// Start validation:
 			$.validity.start();
@@ -418,9 +425,19 @@
 			$("#AddLastName").require("Last Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "Last Name must be less than 40 characters" );
 			$("#AddBirthDate").require("Birth Date Required");
 			
+			var result = $.validity.end();
+			//alert(result.valid);
+			return result.valid;
+		}
+		
+		function validateEditStudentInputs() {
+			
+			// Start validation:
+			$.validity.start();
+			
 			$("#editFirstName").require("First Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "First Name must be less than 40 characters" );
 			$("#editLastName").require("Last Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "Last Name must be less than 40 characters" );
-			$("#editBirthDate").require("Birth Date Required");
+			$("#editedBirthDate").require("Birth Date Required");
 			
 			var result = $.validity.end();
 			//alert(result.valid);
@@ -431,12 +448,20 @@
 		// This is the function wired into the click event of some link or button:
 		function addStudentClicked() {
 			// First check whether the inputs are valid:
-			if (validateMyAjaxInputs()) {
+			if (validateAddStudentInputs()) {
 				return true;
 			}
 			return false;
 		}
 	
+		// This is the function wired into the click event of some link or button:
+		function editStudentClicked() {
+			// First check whether the inputs are valid:
+			if (validateEditStudentInputs()) {
+				return true;
+			}
+			return false;
+		}
 	
 		function Student(OSU_ID, First_Name, Last_Name, Middle_Initial, BirthDate, Gender, Ethnicity) {
 			var self = this;
@@ -458,11 +483,22 @@
 				jsStudentID = ko.toJS( self.OSU_ID );
 				jsTermcode = ko.toJS( self.chosenTerm().termCode );
 				$.getJSON("ajax_get_student_term_courses.php", { "OSU_ID": jsStudentID, "Termcode": jsTermcode }, function(data) { 
-					$.each(data, function(i, item) {	
+					self.chosenTerm().courses([]);
+					$.each(data, function(i, item) {
 						var course = new Course( 	data[i].Name,
 													data[i].Number,
 													data[i].Description );
 						self.chosenTerm().courses.push( course );
+					});
+				})	
+				
+				$.getJSON("ajax_get_student_term_events.php", { "OSU_ID": jsStudentID, "Termcode": jsTermcode }, function(data) { 
+					self.chosenTerm().events([]);
+					$.each(data, function(i, item) {
+						var event = new Event( 	data[i].Track_Name,
+												data[i].Description,
+												data[i].Date );
+						self.chosenTerm().events.push( event );
 					});
 				})	
 			};
@@ -470,18 +506,20 @@
 			self.termToAdd = ko.observable( new Term() );
 			self.addTerm = function() { 
 				jsTerm = ko.toJS( self.termToAdd );
-				newTerm = new Term( jsTerm.name, jsTerm.academicYear );
+				studentID = ko.toJS( self.OSU_ID );
+				newTerm = new Term( jsTerm.name, jsTerm.academicYear, jsTerm.termCode, studentID );
 				self.Terms.push( newTerm );
 			}
 		}
 		
-		function Term( name, year, termCode ) {
+		function Term( name, year, termCode, studentID ) {
 			var self = this;
 			self.name = ko.observable(name);
 			self.termCode = termCode;
 			self.academicYear = ko.observable(year);
 			self.courses = ko.observableArray();
 			self.events = ko.observableArray();
+			self.studentID = studentID;
 			
 			self.fullTermName = ko.computed(function() {
 				return self.name() + " " + self.academicYear();    
@@ -497,7 +535,31 @@
 				
 			self.courseToAdd = ko.observable();
 			self.addCourse = function() { 
-				self.courses.push( self.courseToAdd() );
+				courseAdd = ko.toJS( self.courseToAdd );
+				var jsonTermCourseData = {	
+						"OSU_ID": self.studentID,
+						"Termcode": self.termCode,
+						"Course_Num": courseAdd.number};
+				var request = $.ajax({
+					type: 'POST',
+					url: "ajax_insert_term_course.php",
+					dataType: 'json',
+					data: jsonTermCourseData,
+					success: function(status) {
+						if( status.success ) {
+
+							self.courses.push( self.courseToAdd() );
+						}
+						else
+						{
+
+						}
+					},
+					error: function(status) {
+
+					}
+				});
+
 			}
 			
 			self.eventTrackToAdd = ko.observable();
@@ -505,8 +567,31 @@
 			self.addEvent = function() { 
 				jsEventTrack = ko.toJS( self.eventTrackToAdd );
 				jsEventDesc = ko.toJS( self.eventDescToAdd );
-				newEvent = new Event( jsEventDesc, "3/15/2012", jsEventTrack );
-				self.events.push( newEvent );
+				var jsonTermCourseData = {	
+						"OSU_ID": self.studentID,
+						"Termcode": self.termCode,
+						"Track_Name": jsEventTrack,
+						"Description": jsEventDesc };
+				var request = $.ajax({
+					type: 'POST',
+					url: "ajax_insert_term_event.php",
+					dataType: 'json',
+					data: jsonTermCourseData,
+					success: function(status) {
+						if( status.success ) {
+
+							newEvent = new Event( jsEventDesc, "", jsEventTrack );
+							self.events.push( newEvent );
+						}
+						else
+						{
+
+						}
+					},
+					error: function(status) {
+
+					}
+				});
 			}
 		}
 		
@@ -569,12 +654,12 @@
 			course1 = new Course( 'Discrete math','CS 102', 'Homework' );
 			course2 = new Course( 'Theory of computers','CS 101', 'Homework' );
 			event1 = new Event( "Enrolled", '1/8/2012', 'Computer Systems Option' );
-			term1 = new Term( 'Fall', '2012', '201201');
+			term1 = new Term( 'Fall', '2012', '201201', 931630124 );
 			term1.events.push( event1 );
 			term1.courses.push( course1 );
 			term1.courses.push( course2 );
 			student1.Terms.push( term1 );
-			term2 = new Term( 'Winter', '2012', '201202' );
+			term2 = new Term( 'Winter', '2012', '201202', 931630124 );
 			term2.events.push( event1 );
 			term2.courses.push( course2 );
 			term2.courses.push( course1 );			
@@ -602,23 +687,9 @@
 			
 			
 			self.chosenStudent = ko.observable();
+			self.editedStudentModel = ko.observable( new Student() );
 			self.studentToAdd = ko.observable( new Student() );
-			self.students = ko.observableArray([
-				student1, student2
-			]);	
-			
-			// $.getJSON("search_student_results.php", function(data) { 
-				// $.each(data, function(i, item) {
-					// var student = new Student( 	data[i].OSU_ID, 
-												// data[i].First_Name,
-												// data[i].Last_Name,
-												// data[i].Middle_Initial,
-												// data[i].Birthdate,
-												// data[i].Gender,
-												// data[i].Ethnicity);		
-					// viewModel.students.push( student );
-				// });
-			// })
+			self.students = ko.observableArray();	
 			
 			self.searchStudentsResults = ko.observableArray();
 			self.searchStudentsResults = self.students;
@@ -627,10 +698,12 @@
 				self.chosenStudent(student); 
 				jsStudentID = ko.toJS( self.chosenStudent().OSU_ID );
 				$.getJSON("ajax_get_student_terms.php", { "OSU_ID": jsStudentID }, function(data) { 
+					self.chosenStudent().Terms([]);
 					$.each(data, function(i, item) {	
 						var term = new Term( 	data[i].Name,
 												data[i].Academic_Year,
-												data[i].Termcode);
+												data[i].Termcode,
+												ko.toJS(student.OSU_ID) );
 						self.chosenStudent().Terms.push( term );
 					});
 				})				
@@ -655,46 +728,132 @@
 					var request = $.ajax({
 						type: 'POST',
 						url: "ajax_insert_student.php",
+						dataType: 'json',
 						data: jsonStudentData,
-						success: function(returnedData) {
-							self.students.push( student );
-							self.goToStudent(student); 
-							self.studentToAdd( new Student() );
-							$('#AddBirthDate').datepicker();
-							$('#AddBirthDate').datepicker("option", "dateFormat", "yy-mm-dd");
-							$('#AddBirthDate').datepicker( "option", "changeYear", true );
-							$('#AddBirthDate').datepicker("option", "yearRange", "1940:2012");
+						success: function(status) {
+							if( status.success ) {
+								self.students.push( student );
+								self.goToStudent(student); 
+								self.studentToAdd( new Student() );
+								$('#AddBirthDate').datepicker();
+								$('#AddBirthDate').datepicker("option", "dateFormat", "yy-mm-dd");
+								$('#AddBirthDate').datepicker( "option", "changeYear", true );
+								$('#AddBirthDate').datepicker("option", "yearRange", "1940:2012");
+								$("#AddStudentAlert").hide();
+							}
+							else
+							{
+								$("#AddStudentError").text(status.message);
+								$("#AddStudentAlert").show();
+								$("#AddStudentAlert").alert();
+							}
+						},
+						error: function(status) {
+							$("#AddStudentError").text("Connection Error!");
+							$("#AddStudentAlert").show();
+							$("#AddStudentAlert").alert();
 						}
-					});
-					
-					request.fail(function(jqXHR, textStatus) {
-						alert( "Request failed: " + textStatus );
 					});
 				}
 			};		
 			
-			self.editStudent = function(student) {
+			self.editStudent = function( student ) {			
+				var editedStudentData = new Student( 	ko.toJS(student.OSU_ID), 
+														ko.toJS(student.First_Name),
+														ko.toJS(student.Last_Name),
+														ko.toJS(student.Middle_Initial),
+														ko.toJS(student.BirthDate),
+														ko.toJS(student.Gender),
+														ko.toJS(student.Ethnicity)); 
+														
+				self.editedStudentModel( editedStudentData );
+														
 				$('#editStudent').modal();
-				$('#EditBirthDate').click( function() {
-					$('#editedBirthdate').datepicker();
-					$('#editedBirthdate').datepicker("option", "dateFormat", "yy-mm-dd");
-					$('#editedBirthdate').datepicker( "option", "changeYear", true );
-					$('#editedBirthdate').datepicker("option", "yearRange", "1940:2012");
-					$( "#editedBirthdate" ).datepicker( "option", "defaultDate", ko.toJS(student.BirthDate) );
-					$( "#editedBirthdate" ).datepicker("show");
-				});
+				$('#editedBirthdate').datepicker().css('z-index, 1101')					
+				$('#editedBirthdate').datepicker("option", "dateFormat", "yy-mm-dd");
+				$('#editedBirthdate').datepicker( "option", "changeYear", true );
+				$('#editedBirthdate').datepicker("option", "yearRange", "1940:2012");
+				$( "#editedBirthdate" ).datepicker( "option", "defaultDate", ko.toJS(student.BirthDate) );
+				$( "#editedBirthdate" ).val( ko.toJS(student.BirthDate) );
 			};
+			
+			self.saveEditedStudent = function( student ) {
+				if( editStudentClicked() )
+				{
+					var jsonStudent = ko.toJS(student);
+					var jsonStudentData = {	"OSU_ID": jsonStudent.OSU_ID,
+										"First_Name": jsonStudent.First_Name,
+										"Last_Name": jsonStudent.Last_Name,
+										"Middle_Initial": jsonStudent.Middle_Initial,
+										"BirthDate": jsonStudent.BirthDate,
+										"Gender": jsonStudent.Gender,
+										"Ethnicity": jsonStudent.Ethnicity};
+					var request = $.ajax({
+						type: 'POST',
+						url: "ajax_update_student.php",
+						dataType: 'json',
+						data: jsonStudentData,
+						success: function(status) {
+							if( status.success ) {		
+																
+								self.chosenStudent().OSU_ID( ko.toJS(student.OSU_ID) );			
+								self.chosenStudent().First_Name( ko.toJS(student.First_Name) );
+								self.chosenStudent().Last_Name( ko.toJS(student.Last_Name) );
+								self.chosenStudent().Middle_Initial( ko.toJS(student.Middle_Initial) );
+								self.chosenStudent().BirthDate( ko.toJS(student.BirthDate) );
+								self.chosenStudent().Gender( ko.toJS(student.Gender) );
+								self.chosenStudent().Ethnicity( ko.toJS(student.Ethnicity) );
+													
+								$('#editStudent').modal('toggle');
+							}
+							else
+							{
+								$("#EditStudentError").text(status.message);
+								$("#EditStudentAlert").show();
+								$("#EditStudentAlert").alert();
+							}
+						},
+						error: function(status) {
+							$("#EditStudentError").text("Connection Error!");
+							$("#EditStudentAlert").show();
+							$("#EditStudentAlert").alert();
+						}
+					});					
+				}
+			}
 			
 			self.deleteStudent = function(student) {
 				$('#deleteStudent').modal();
 			};
 			
 			self.confirmedDeleteStudent = function(student) {
-				$('#deleteStudent').modal('toggle');
-				self.students.destroy( student );
-				self.students.remove( student );
-				self.studentTabs.pop();
-				$('#Search a').tab('show');
+					var jsonStudent = ko.toJS(student);
+					var jsonStudentData = {	"OSU_ID": jsonStudent.OSU_ID};
+					var request = $.ajax({
+						type: 'POST',
+						url: "ajax_delete_student.php",
+						dataType: 'json',
+						data: jsonStudentData,
+						success: function(status) {
+							if( status.success ) {		
+								$('#deleteStudent').modal('toggle');
+								self.students.remove( student );
+								self.studentTabs.pop();
+								$('#Search a').tab('show');
+							}
+							else
+							{
+								$("#DeleteStudentError").text(status.message);
+								$("#DeleteStudentAlert").show();
+								$("#DeleteStudentAlert").alert();
+							}
+						},
+						error: function(status) {
+							$("#DeleteStudentError").text("Connection Error!");
+							$("#DeleteStudentAlert").show();
+							$("#DeleteStudentAlert").alert();
+						}
+					});					
 			};
 			
 		}

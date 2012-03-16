@@ -22,9 +22,26 @@
 	$Ethnicity = $_POST["Ethnicity"];
 	$Ethnicity = mysql_real_escape_string( $Ethnicity );
 	
-	$termCourseQuery = 	"INSERT INTO STUDENT 
-						VALUES ( '{$OSU_ID}', '{$First_Name}', '{$Last_Name}', 
-						'{$Middle_Initial}', '{$BirthDate}', '{$Gender}', '{$Ethnicity}')";
+	if( $OSU_ID == '' ) {
+		$result = array('success' => false, 'message' => "Blank OSU_ID");
+		print json_encode($result);
+		return;
+	}
+	
+	if( $BirthDate == '' ) {
+		$result = array('success' => false, 'message' => "Blank Birthdate");
+		print json_encode($result);
+		return;
+	}
+	
+	$termCourseQuery = 	"UPDATE STUDENT 
+						SET First_Name = '{$First_Name}', 
+						Last_Name = '{$Last_Name}', 
+						Middle_Initial = '{$Middle_Initial}', 
+						Birthdate = '{$BirthDate}', 
+						Gender = '{$Gender}', 
+						Ethnicity = '{$Ethnicity}'
+						WHERE OSU_ID = '{$OSU_ID}'";
 	
 	$termCourseResults = mysql_query( $termCourseQuery );
 	$error = mysql_error();
@@ -32,7 +49,6 @@
 	if( !$termCourseResults ) {
 		$result = array('success' => false, 'message' => "{$error}");
 		print json_encode($result);
-		//print "QUERY FAILED: " . $termCourseQuery;
 	}
 	else
 	{

@@ -128,7 +128,7 @@
 							<div class="control-group">
 							<label class="control-label" for="addDescription">Description:</label>
 								<div class="controls">
-									<input class="span1" data-bind="value: Description" id="addDescription"/>
+									<textarea class="input-xlarge span6" data-bind="value: Description" id="addDescription" rows="3"></textarea>
 								</div>
 							</div>
 							
@@ -140,15 +140,13 @@
                     </div>
                     <div class="tab-pane" id="CourseContent" data-bind="with: chosenCourse">
 						<div class="row">
-							<div class="span3">
+							<div class="span6">
 								<label>Number</label> 
 								<input readonly="readonly" data-bind="value: Number" id="Number"/>
 								<label>Name</label> 
-								<input readonly="readonly" data-bind="value: Name" id="Name"/>
-							</div>
-							<div class="span3">
+								<input class="span5" readonly="readonly" data-bind="value: Name" id="Name"/>
 								<label>Description</label> 
-								<input readonly="readonly" data-bind="value: Description" id="lastName"/>
+								<textarea readonly="readonly" class="input-xlarge span6" data-bind="value: Description" id="viewDescription" rows="3"></textarea>
 								<br /><br />
 								<button id="editCourseBtn" class="btn btn-warning" data-bind="click: $root.editCourse">Edit</button>
 								<button id="deleteCourseBtn" class="btn btn-danger" data-bind="click: $root.deleteCourse">Delete</button>
@@ -186,7 +184,7 @@
 			<div class="control-group">
 				<label class="control-label" for="editNumber">Number:</label>
 				<div class="controls">
-					<input data-bind="value: Number" id="editNumber"/>
+					<input readonly="readonly" data-bind="value: Number" id="editNumber"/>
 				</div>
 			</div>
 			
@@ -200,7 +198,7 @@
 			<div class="control-group">
 			<label class="control-label" for="editDescription">Description:</label>
 				<div class="controls">
-					<input class="span1" data-bind="value: Description" id="editDescription"/>
+					<textarea class="input-xlarge" data-bind="value: Description" id="editDescription" rows="3"></textarea>
 				</div>
 			</div>
 			</form>
@@ -329,12 +327,10 @@
 				
 				self.chosenCourse = ko.observable();
 				self.courseToAdd = ko.observable( new Course() );
-				self.courses = ko.observableArray([
-					course1, course2
-				]);	
+				self.courses = ko.observableArray();	
 				
 				self.searchCoursesResults = ko.observableArray();
-				self.searchCoursesResults = self.courses;
+				self.searchCoursesResults = self.courses;		
 				
 				self.goToCourse = function(course) { 
 					self.chosenCourse(course); 			
@@ -389,18 +385,17 @@
 			ko.applyBindings( viewModel );
 	
 			function searchCourses() {
-				Number = $("#SearchNumber").val();
-				Name = $("#SearchName").val();
-				Description = $("#SearchDescription").val();
+				CourseNumber = $("#SearchNumber").val();
+				CourseName = $("#SearchName").val();
+				CourseDescription = $("#SearchDescription").val();
 				$.ajax({
 					type: "POST",
 					url: "search_course_results.php",
 					dataType: 'json',
-					data: {"Number": Number, "Name": Name, "Description": Description},
+					data: {"Number": CourseNumber, "Name": CourseName, "Description": CourseDescription},
 					success: function(data) {
 						viewModel.courses([]); 
 						$.each(data, function(i, item) {
-							//alert(data[i].Number);
 							var course = new Course( 	data[i].Number, 
 														data[i].Name,
 														data[i].Description );		
