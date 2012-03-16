@@ -1,11 +1,37 @@
 <?php
     require "db_connect.php";
+	
+	$startYear = $_POST['stDate'];
+	$endYear = $_POST['eDate'];
+	
+	if ($startYear == "")
+		$startYear = 2005;
+		
+	if ($endYear == "")
+		$endYear = 2012;
+		
+	//echo $startYear;
+	//echo $endYear;
 
-    
+    $ethFlag = true;
+    $ageFlag = true;
+    $genderFlag = true;
+
+    if($_POST['eth'] == "false")
+        $ethFlag = false;
+    if($_POST['age'] == "false")
+        $ageFlag = false;
+    if($_POST['gender'] == "false")
+        $genderFlag = false;
+
+    if(!$ethFlag && !$ageFlag && !$genderFlag)
+        $ethFlag = true;
+
     $initAge    = "SELECT DISTINCT YEAR(Birthdate) FROM STUDENT ORDER BY YEAR(Birthdate) DESC;";
     $initEth    = "SELECT DISTINCT Ethnicity FROM STUDENT ORDER BY Ethnicity DESC;";
-    $initYears  = "SELECT DISTINCT YEAR(Date) FROM EVENT WHERE Description='Enrolled' ORDER BY YEAR(Date) ASC;
-";
+    $initYears  = "SELECT DISTINCT YEAR(Date) FROM EVENT WHERE Description='Enrolled' AND YEAR(Date) >= '{$startYear}' AND YEAR(Date) <= '{$endYear}'
+					ORDER BY YEAR(Date) ASC;";
+
     //Initialize the arrays to the right lengths and with all fields present in the db
     $initYears = query_db($initYears);
     $years = array();
@@ -14,8 +40,10 @@
 
     $initAge = query_db($initAge);
     $age = array();
-    while($temp = mysql_fetch_array($initAge))
+    while($temp = mysql_fetch_array($initAge)){
          array_push( $age, (date("Y") - $temp[0]) );
+		 //print (date("Y") - $temp[0]);
+	}
 
     $initEth = query_db($initEth);
     $ethnicity = array();
@@ -34,57 +62,100 @@
         $total[$temp["YEAR(Date)"]] = $temp["total"];
 
 
+        $ethStat = getStat("Ethnicity");
+        $ageStat = getStat("YEAR(Birthdate)");
+        $genStat = getStat("Gender");
 
-    $ethStat = getStat("Ethnicity");
-    $ageStat = getStat("YEAR(Birthdate)");
-    $genStat = getStat("Gender");
 
-
-    print '<table class="table table-striped table-bordered table-condensed">';
-    print '<thead><tr><th>&nbsp;</th>';
-    foreach($years as $year)
+    if($ethFlag)
     {
-        print"<th>{$year}</th>";
+        print '<BR><BR>';
+		print '<h4>Ethnicity</h4>';
+		
+		print '<table class="table table-striped table-bordered table-condensed">';
+        print '<thead><tr><th>&nbsp;</th>';
+        foreach($years as $year)
+        {
+            print"<th>{$year}</th>";
+        }
+
+
+        print '<tbody>';
+        
+        foreach($ethnicity as $eth)
+        {
+            print "<tr><td>{$eth}</td>";
+            foreach($years as $year)
+            {
+                    print "<td>";
+                    print toPercent($ethStat[$year][$eth], $total[$year]);
+                    print "</td>";
+            }
+            print '</tr>';
+        }
+        print '</tbody>';
+        print '</table>';
+    }
+        
+
+    if($ageFlag)
+    {
+        print '<h4>Age</h4>';
+		
+		print '<table class="table table-striped table-bordered table-condensed">';
+        print '<thead><tr><th>&nbsp;</th>';
+        foreach($years as $year)
+        {
+            print"<th>{$year}</th>";
+        }
+
+
+        print '<tbody>';
+        
+        foreach($age as $ag)
+        {
+            print "<tr><td>{$ag}</td>";
+            foreach($years as $year)
+            {
+                print "<td>";
+                print toPercent($ageStat[$year][$ag], $total[$year]);
+                print"</td>";
+            }
+            print '</tr>';
+        }
+            print '</tbody>';
+            print '</table>';
     }
     
+    if($genderFlag)
+    {
+        print '<h4>Gender</h4>';
+		
+		print '<table class="table table-striped table-bordered table-condensed">';
+        print '<thead><tr><th>&nbsp;</th>';
+        foreach($years as $year)
+        {
+            print"<th>{$year}</th>";
+        }
 
-    print '<tbody>';
-    
-    foreach($ethnicity as $eth)
-    {
-        print "<tr><td>{$eth}</td>";
-        foreach($years as $year)
+
+        print '<tbody>';
+        
+        foreach($gender as $gen)
         {
-            print "<td>";
-            print toPercent($ethStat[$year][$eth], $total[$year]);
-            print "</td>";
+            print "<tr><td>{$gen}</td>";
+            foreach($years as $year)
+            {
+                print "<td>";
+                print toPercent($genStat[$year][$gen], $total[$year]);
+                print "</td>";
+            }
+            print '</tr>';
         }
-        print '</tr>';
+        print '</tbody>';
+        print '</table>';
     }
-    foreach($age as $ag)
-    {
-        print "<tr><td>{$ag}</td>";
-        foreach($years as $year)
-        {
-            print "<td>";
-            print toPercent($ageStat[$year][$ag], $total[$year]);
-            print"</td>";
-        }
-        print '</tr>';
-    }
-    foreach($gender as $gen)
-    {
-        print "<tr><td>{$gen}</td>";
-        foreach($years as $year)
-        {
-            print "<td>";
-            print toPercent($genStat[$year][$gen], $total[$year]);
-            print "</td>";
-        }
-        print '</tr>';
-    }
-    print '</tbody>';
-    print '</table>';
+        
 
     function toPercent($value, $total)
     {

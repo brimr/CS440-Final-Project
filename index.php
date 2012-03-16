@@ -62,7 +62,7 @@
 		    </a></li>
                     <li class=""><a href="#lA" data-toggle="tab">Completed percentage</a></li>
                     <li class=""><a href="#lB" data-toggle="tab">Average Time</a></li>
-                    <li class=""><a href="#lC" data-toggle="tab">Age, Gender, Ethnicity Statistics</a></li>
+                    <li class=""><a href="#lC" data-toggle="tab">Ethnicity, Age, Gender Statistics</a></li>
                     <li class=""><a href="#lD" data-toggle="tab">Completed courses</a></li>
                     <li class=""><a href="#lE" data-toggle="tab">Required courses</a></li>
                 </ul>
@@ -102,8 +102,17 @@
 			<!--<?php include "average_completion_student_track_report.php"; ?>-->
                     </div>
                     <div class="tab-pane" id="lC">
-                        <h3>Age, Gender, Ethnicity Statistics</h3>
-                    	<?php include "student_statistics_report.php"; ?>
+                        <h3>Ethnicity, Age, Gender Statistics</h3>
+							<input type="text" name = "stDate" id = "stDate" class="input-small" placeholder="Start Year">
+							<input type="text" name = "eDate" id = "eDate" class="input-small" placeholder="End Year">
+							<button id = "EthDate" type = "submit" class="btn">Go</button>
+							<div id = "updateEthContent"></div>
+						   <!--Age <input type="checkbox" name="age" id="ageCheckbox" class="input-small">
+                            Ethnicity <input type="checkbox" name="ethnicity" id="ethCheckbox" class="input-small">
+                            Gender <input type="checkbox" name="gender" id="gendCheckbox" class="input-small">
+                            <button id = "UpdateStats" type = "submit" class="btn">Go</button>-->
+							
+                    	<!--<?php include "student_statistics_report.php"; ?>-->
 		    </div>
                     <div class="tab-pane" id="lD">
                         <h3>Completed courses</h3>
@@ -161,11 +170,36 @@
 			firstDate = $("#firstDate").val();
 			lastDate = $("#lastDate").val();
 			$("#percentByTrack").load( "percent_completion_student_track_report.php", {"firstDate": firstDate, "lastDate": lastDate});
-			$("#NewDate").click( function() {
+			$("#EthDate").click( function() {
 				firstDate = $("#firstDate").val();
 				lastDate = $("#lastDate").val();
 				$("#percentByTrack").load( "percent_completion_student_track_report.php", {"firstDate": firstDate, "lastDate": lastDate});
-                });	
+                });
+
+        eth = $("#ethCheckbox").is(':checked');
+        gender = $("#gendCheckbox").is(':checked');
+        age = $("#ageCheckbox").is(':checked');
+        $("#studentStatistics").load( "student_statistics_report.php", {"eth": eth, "gender": gender, "age": age});
+        
+        $("#UpdateStats").click( function() {
+                
+                eth = $("#ethCheckbox").is(':checked');
+                gender = $("#gendCheckbox").is(':checked');
+                age = $("#ageCheckbox").is(':checked');
+                $("#studentStatistics").load( "student_statistics_report.php", {"eth": eth, "gender": gender, "age": age});
+                });
+				
+			stDate = $("#stDate").val();
+			eDate = $("#eDate").val();
+			$("#updateEthContent").load( "student_statistics_report.php", {"stDate": stDate, "eDate": eDate});
+			$("#EthDate").click( function() {
+				
+				stDate = $("#stDate").val();
+				eDate = $("#eDate").val();
+				$("#updateEthContent").load( "student_statistics_report.php", {"stDate": stDate, "eDate": eDate});
+                });
+        
+        $("#courseCompletion").load("completion_course_report.php");				
         });
     </script>
 </body>
