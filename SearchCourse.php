@@ -119,19 +119,22 @@
 							</div>
 							
 							<div class="control-group">
-								<label class="control-label" for="addName">Name:</label>
+								<label class="control-label" for="AddName">Name:</label>
 								<div class="controls">
-									<input data-bind="value: Name" id="addName"/>
+									<input data-bind="value: Name" id="AddName"/>
 								</div>
 							</div>
 							
 							<div class="control-group">
-							<label class="control-label" for="addDescription">Description:</label>
+							<label class="control-label" for="AddDescription">Description:</label>
 								<div class="controls">
-									<textarea class="input-xlarge span6" data-bind="value: Description" id="addDescription" rows="3"></textarea>
+									<textarea class="input-xlarge span6" data-bind="value: Description" id="AddDescription" rows="3"></textarea>
 								</div>
 							</div>
-							
+							<div id="AddCourseAlert" class="alert alert-block alert-error fade in hide">
+								<h4 class="alert-heading">Error!</h4>
+								<p id="AddCourseError"></p>
+							</div>							
 							<div class="form-actions">
                                 <button id="addCourseBtn" class="btn btn-primary" data-bind="click: $root.addCourse">Add Course</button>
                             </div>
@@ -161,20 +164,23 @@
             <p>&copy; Dwight Trahin, Ryan Brim and Karen Lewey 2012</p>
         </footer>
     </div>
-
+	
 	<div id="deleteCourse" class="modal hide fade in" data-bind="with: chosenCourse" >
 		<div class="modal-body"> 
-			<div class="alert alert-block alert-error">
-				<h4 class="alert-heading">Delete Course</h4>
-				<p>Are you sure you want to delete this Course?</p>
-				<br />
-				<button id="confirmedDeleteStudentBtn" class="btn btn-danger" data-bind="click: $root.confirmedDeleteCourse">YES</button>
-				<button class="btn" data-dismiss="modal">NO</button>
-			</div>		
+			<div id="DeleteCourseAlert" class="alert alert-block alert-error fade in hide">
+				<h4 class="alert-heading">Error!</h4>
+				<p id="DeleteCourseError"></p>
+			</div>	
+			<p>Are you sure you want to delete this Course?</p>
+			<br />
+			<button id="confirmedDeleteCourseBtn" class="btn btn-danger" data-bind="click: $root.confirmedDeleteCourse">DELETE</button>
+			<button class="btn" data-dismiss="modal">Cancel</button>
+
 		</div>
 	</div>
+	
 		
-	<div id="editCourse" class="modal hide fade in" data-bind="with: chosenCourse" >
+	<div id="editCourse" class="modal hide fade in" data-bind="with: $root.editedCourse" >
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">×</a>
 			<h3>Edit Course</h3>
@@ -204,8 +210,12 @@
 			</form>
 		</div>
 		<div class="modal-footer">
-		  <a href="#" class="btn" data-dismiss="modal">Close</a>
-		  <a href="#" class="btn btn-primary" data-dismiss="modal">Save changes</a>
+			<div id="EditCourseAlert" class="alert alert-block alert-error fade in hide">
+				<h4 class="alert-heading">Error!</h4>
+				<p id="EditCourseError"></p>
+			</div>
+			<button class="btn" data-dismiss="modal">Close</a>
+			<button class="btn btn-primary" data-bind="click: $root.saveEditedCourse">Save changes</a>
 		</div>
 	</div>	
         <!-- Le javascript
@@ -280,12 +290,31 @@
 				$("#AddName").require("Course Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "First Name must be less than 40 characters" );
 				$("#AddDescription").nonHtml( "Disallowed characters" ).maxLength( 100, "Last Name must be less than 100 characters" );
 				
+				var result = $.validity.end();
+				//alert(result.valid);
+				return result.valid;
+			}
+			
+			function validateEditCourseInputs() {
+				
+				// Start validation:
+				$.validity.start();
+				
 				$("#editName").require("Course Name Required").nonHtml( "Disallowed characters" ).maxLength( 40, "Last Name must be less than 40 characters" );
 				$("#editDescription").nonHtml( "Disallowed characters" ).maxLength( 100, "Last Name must be less than 100 characters" );
 				
 				var result = $.validity.end();
 				//alert(result.valid);
 				return result.valid;
+			}
+			
+			// This is the function wired into the click event of some link or button:
+			function editCourseClicked() {
+				// First check whether the inputs are valid:
+				if (validateEditCourseInputs()) {
+					return true;
+				}
+				return false;
 			}
 
 			// This is the function wired into the click event of some link or button:
@@ -327,6 +356,7 @@
 				
 				self.chosenCourse = ko.observable();
 				self.courseToAdd = ko.observable( new Course() );
+				self.editedCourse = ko.observable( new Course() );
 				self.courses = ko.observableArray();	
 				
 				self.searchCoursesResults = ko.observableArray();
@@ -342,43 +372,120 @@
 						
 				self.addCourse = function(course) { 
 					var jsonCourse = ko.toJS(course);
-					var jsonCourseData = {	"Number": jsonStudent.Number,
-											"Name": jsonStudent.Name,
-											"Description": jsonStudent.Description};
+					var jsonCourseData = {	"Number": jsonCourse.Number,
+											"Name": jsonCourse.Name,
+											"Description": jsonCourse.Description};
 					if( addCourseClicked() )
 					{
 						var request = $.ajax({
 							type: 'POST',
 							url: "ajax_insert_course.php",
+							dataType: 'json',
 							data: jsonCourseData,
-							success: function(returnedData) {
-								self.courses.push( course );
-								self.goToCourse( course ); 
-								self.courseToAdd( new Course() );
+							success: function(status) {
+								if( status.success ) {
+									self.courses.push( course );
+									self.goToCourse( course ); 
+									self.courseToAdd( new Course() );
+									$("#AddCourseAlert").hide();
+								}
+								else
+								{
+									$("#AddCourseError").text(status.message);
+									$("#AddCourseAlert").show();
+									$("#AddCourseAlert").alert();
+								}
+							},
+							error: function(status) {
+								$("#AddCourseError").text("Connection Error!");
+								$("#AddCourseAlert").show();
+								$("#AddCourseAlert").alert();
 							}
-						});
-						
-						request.fail(function(jqXHR, textStatus) {
-							alert( "Request failed: " + textStatus );
 						});
 					}
 				};		
 				
 				self.editCourse = function(course) {
+					var editedStudentData = new Course( 	ko.toJS(course.Number), 
+															ko.toJS(course.Name),
+															ko.toJS(course.Description)); 
+														
+					self.editedCourse( editedStudentData );
+															
 					$('#editCourse').modal();
 				};
+				
+				self.saveEditedCourse = function( course ) {
+					
+					if( editCourseClicked() )
+					{
+						var jsonCourse = ko.toJS(course);
+						var jsonCourseData = {	"Number": jsonCourse.Number,
+												"Name": jsonCourse.Name,
+												"Description": jsonCourse.Description };
+						var request = $.ajax({
+							type: 'POST',
+							url: "ajax_update_course.php",
+							dataType: 'json',
+							data: jsonCourseData,
+							success: function(status) {
+								if( status.success ) {									
+									self.chosenCourse().Number( ko.toJS(course.Number) );			
+									self.chosenCourse().Name( ko.toJS(course.Name) );
+									self.chosenCourse().Description( ko.toJS(course.Description) );
+														
+									$('#editCourse').modal('toggle');
+								}
+								else
+								{
+									$("#EditCourseError").text(status.message);
+									$("#EditCourseAlert").show();
+									$("#EditCourseAlert").alert();
+								}
+							},
+							error: function(status) {
+								$("#EditCourseError").text("Connection Error!");
+								$("#EditCourseAlert").show();
+								$("#EditCourseAlert").alert();
+							}
+						});					
+					}	
+				}	
 				
 				self.deleteCourse = function(course) {
 					$('#deleteCourse').modal();
 				};
 				
 				self.confirmedDeleteCourse = function(course) {
-					$('#deleteCourse').modal('toggle');
-					self.courses.destroy( course );
-					self.courses.remove( course );
-					self.courseTabs.pop();
-					$('#Search a').tab('show');
-				}; 
+					var jsonCourse = ko.toJS(course);
+					var jsonCourseData = {	"Number": jsonCourse.Number};
+					var request = $.ajax({
+						type: 'POST',
+						url: "ajax_delete_course.php",
+						dataType: 'json',
+						data: jsonCourseData,
+						success: function(status) {
+							if( status.success ) {		
+								$('#deleteCourse').modal('toggle');
+								self.courses.remove( course );
+								self.courseTabs.pop();
+								$('#Search a').tab('show');
+							}
+							else
+							{
+								$("#DeleteCourseError").text(status.message);
+								$("#DeleteCourseAlert").show();
+								$("#DeleteCourseAlert").alert();
+							}
+						},
+						error: function(status) {
+							$("#DeleteCourseError").text("Connection Error!");
+							$("#DeleteCourseAlert").show();
+							$("#DeleteCourseAlert").alert();
+						}
+					});					
+				};
+				
 			}
 			
 			var viewModel = new CoursesViewModel();
